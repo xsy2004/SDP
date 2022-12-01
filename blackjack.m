@@ -4,10 +4,11 @@ clc
 clear
 
 
-gameLogic()
 
-function gameLogic()
-    init = simpleGameEngine('retro_cards.png',16,16,10,[0,100,0]);
+init = simpleGameEngine('retro_cards.png',16,16,10,[0,100,0]);
+gameLogic(init)
+function gameLogic(init)
+    
     % gamerStatus = 0;
     % defint variable
     gameStatus = 0;
@@ -151,9 +152,19 @@ function gameLogic()
         end
         clf
         board_display(:,:) = 1 * ones(5,5);
-
         drawScene(init, board_display)
-        text(150, 300, "Game Stop", 'FontSize', 30,'Color','white')
+        text(180, 300, "Game Stop", 'FontSize', 30,'Color','white')
+        % try again button
+        annotation('textbox', [0.4 0.3 0.1 0.1], 'String', 'Try again','FontSize', 23, 'FontWeight','bold', 'Color', [0.3010 0.7450 0.9330],'LineWidth',2, Margin=1, HorizontalAlignment='center')
+        [x,y] = getMouseInput(init);
+        drawScene(init, board_display)
+        if isequal([x y],[4 3]) == 1 || isequal([x y],[4 2]) == 1 || isequal([x y],[4 4]) == 1
+            clf
+            clc
+            gameLogic(init)
+
+
+        end
     end
     
     
