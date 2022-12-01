@@ -61,32 +61,55 @@ function gameLogic()
         
         while credit >= 0
             deal = board_display(5,:)
-            if count <= 5
+            drawScene(init, board_display)
+            if true
                 nullPosition = find(deal == 2);
                 count = count + 1;
                 [x,y] = getMouseInput(init);
                 % board_display(x,y) = 11;
     
                 % Hit action
-                if isequal([x y],[4 2]) == 1
+                if isequal([x y],[4 2]) == 1 && count < 3
+                    lose_notice.String = '';
+                    win_notice.String = '';
+                    % user
                     card = getRandomCard(1);
                     board_display(5,nullPosition(count)) = card_sprites(card);
                     sum_user = sum_user + calculateSum(card);
                     text_user.String = sprintf("Your score %.f", sum_user);
+                    % ai
+                    ai_card = getRandomCard(1);
+                    board_display(1,nullPosition(count)) = card_sprites(ai_card);
+                    sum_ai = sum_ai  + calculateSum(ai_card);
+                    text_ai.String = sprintf("AI score %.f", sum_ai(1));
     
                     
-    %                 text_ai = sprintf("AI score %.f", sum_ai(1));
-    %                 text(480, 400, text_ai, 'FontSize', 20)
-                    if sum_user > 21
-                        credit = credit - 100;
-                        string_credit = sprintf("Availiable Credit %.f", credit);
-                        text_credit.String = string_credit;
+                    
+                    if sum_user > 21 || sum(sum_ai) > sum_user && sum(sum_ai) < 21
                         
-                        [sum_ai, sum_user, board_display] = reDeal(init, card_sprites);
-
+                        credit = credit - 100;
+                        string_credit = sprintf("Availiable Credit %.f ", credit);
+                        text_credit.String = string_credit;
+                        lose_notice = LoseStyle(init,board_display);
+                        
                         sum_user = 0;
                         text_user.String = sprintf("Your score %.f", sum_user);
+                        [sum_ai, sum_user, board_display] = reDeal(init, card_sprites);
+                        text_user.String = sprintf("Your score %.f", sum_user);
                     end
+
+                    if sum(sum_ai) > 21
+                        credit = credit + 100;
+                        string_credit = sprintf("Availiable Credit %.f ", credit);
+                        text_credit.String = string_credit;
+                        win_notice = winStyle(init, board_display)
+                        
+                        sum_user = 0;
+                        text_user.String = sprintf("Your score %.f", sum_user);
+                        [sum_ai, sum_user, board_display] = reDeal(init, card_sprites);
+                        text_user.String = sprintf("Your score %.f", sum_user);
+                    end
+                    
                         
                 end
             end
@@ -94,11 +117,38 @@ function gameLogic()
 
             % Stand action
             if isequal([x y],[4 4]) == 1
-                gameStatus = 1;
+                    lose_notice.String = '';
+                    win_notice.String = '';
+                if sum_user < sum(sum_ai)
+                        credit = credit - 100;
+                        string_credit = sprintf("Availiable Credit %.f ", credit);
+                        text_credit.String = string_credit;
+                        lose_notice = LoseStyle(init,board_display);
+                        
+                        sum_user = 0;
+                        text_user.String = sprintf("Your score %.f", sum_user);
+                        [sum_ai, sum_user, board_display] = reDeal(init, card_sprites);
+                        text_user.String = sprintf("Your score %.f", sum_user);
+                else
+                        credit = credit + 100;
+                        string_credit = sprintf("Availiable Credit %.f ", credit);
+                        text_credit.String = string_credit;
+                        win_notice = winStyle(init, board_display)
+                        
+                        sum_user = 0;
+                        text_user.String = sprintf("Your score %.f", sum_user);
+                        [sum_ai, sum_user, board_display] = reDeal(init, card_sprites);
+                        text_user.String = sprintf("Your score %.f", sum_user);
+                end
             end
             drawScene(init, board_display)
             
         end
+        clf
+        board_display(:,:) = 1 * ones(5,5);
+
+        drawScene(init, board_display)
+        text(150, 300, "Game Stop", 'FontSize', 30,'Color','white')
     end
     
     
@@ -150,4 +200,15 @@ function [sum_ai, sum_user, result] = reDeal(init, card_sprites)
         drawScene(init, board_display)
         
 end
+
+function win_notice = winStyle(init, board_display)
+    drawScene(init, board_display)
+    win_notice = text(300, 300, "Your win", 'FontSize', 25,'Color','white');
+end
+
+function lose_notice =  LoseStyle(init, board_display)
+    drawScene(init, board_display)
+    lose_notice = text(300, 300, "AI Win", 'FontSize', 35,'Color','white');
+end
+
 
