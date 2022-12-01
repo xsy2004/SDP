@@ -165,7 +165,7 @@ classdef simpleGameEngine < handle
             % current image, which is much faster.
             if isempty(obj.my_figure) || ~isvalid(obj.my_figure)
                 % inititalize figure
-                obj.my_figure = figure();
+                obj.my_figure = figure('ToolBar','none','MenuBar','none','Resize','on');
                 
                 % set guidata to the  key press and release functions,
                 % this allows keeping track of what key has been pressed

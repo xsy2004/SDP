@@ -1,6 +1,0 @@
-% Gofish
-
-function result = userInput(x)
-    fprintf("[1] Start the game")
-    fprintf("[]")
-end
