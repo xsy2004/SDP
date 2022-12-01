@@ -72,6 +72,7 @@ function gameLogic()
                 if isequal([x y],[4 2]) == 1 && count < 3
                     lose_notice.String = '';
                     win_notice.String = '';
+                    push_notice.String = '';
                     % user
                     card = getRandomCard(1);
                     board_display(5,nullPosition(count)) = card_sprites(card);
@@ -83,10 +84,11 @@ function gameLogic()
                     sum_ai = sum_ai  + calculateSum(ai_card);
                     text_ai.String = sprintf("AI score %.f", sum_ai(1));
     
-                    
-                    
-                    if sum_user > 21 || sum(sum_ai) > sum_user && sum(sum_ai) < 21
-                        
+                    if sum_user == sum(sum_ai) || sum_user > 21 && sum(sum_ai) > 21
+                        [push_notice, lose_notice, win_notice] =  pushStyle(init, board_display);
+                        [sum_ai, sum_user, board_display] = reDeal(init, card_sprites);
+                        text_user.String = sprintf("Your score %.f", sum_user);
+                    elseif sum_user > 21 && ~sum(sum_ai) > 21 || sum(sum_ai) > sum_user
                         credit = credit - 100;
                         string_credit = sprintf("Availiable Credit %.f ", credit);
                         text_credit.String = string_credit;
@@ -96,9 +98,7 @@ function gameLogic()
                         text_user.String = sprintf("Your score %.f", sum_user);
                         [sum_ai, sum_user, board_display] = reDeal(init, card_sprites);
                         text_user.String = sprintf("Your score %.f", sum_user);
-                    end
-
-                    if sum(sum_ai) > 21
+                    elseif sum(sum_ai) > 21 && ~sum_user > 21 || sum(sum_ai) < sum_user
                         credit = credit + 100;
                         string_credit = sprintf("Availiable Credit %.f ", credit);
                         text_credit.String = string_credit;
@@ -109,17 +109,20 @@ function gameLogic()
                         [sum_ai, sum_user, board_display] = reDeal(init, card_sprites);
                         text_user.String = sprintf("Your score %.f", sum_user);
                     end
-                    
-                        
-                end
             end
             count = 0;
 
             % Stand action
             if isequal([x y],[4 4]) == 1
-                    lose_notice.String = '';
-                    win_notice.String = '';
-                if sum_user < sum(sum_ai)
+                lose_notice.String = '';
+                win_notice.String = '';
+                push_notice.String = '';
+                % find who win
+                if sum_user == sum(sum_ai) || sum_user > 21 && sum(sum_ai) > 21
+                    [push_notice, lose_notice, win_notice] =  pushStyle(init, board_display);
+                    [sum_ai, sum_user, board_display] = reDeal(init, card_sprites);
+                    text_user.String = sprintf("Your score %.f", sum_user);
+                elseif sum_user < sum(sum_ai) && sum_user < 21 && sum(sum_ai) < 21
                         credit = credit - 100;
                         string_credit = sprintf("Availiable Credit %.f ", credit);
                         text_credit.String = string_credit;
@@ -129,7 +132,7 @@ function gameLogic()
                         text_user.String = sprintf("Your score %.f", sum_user);
                         [sum_ai, sum_user, board_display] = reDeal(init, card_sprites);
                         text_user.String = sprintf("Your score %.f", sum_user);
-                else
+                elseif sum_user > sum(sum_ai) && sum_user < 21 && sum(sum_ai) < 21
                         credit = credit + 100;
                         string_credit = sprintf("Availiable Credit %.f ", credit);
                         text_credit.String = string_credit;
@@ -141,6 +144,8 @@ function gameLogic()
                         text_user.String = sprintf("Your score %.f", sum_user);
                 end
             end
+
+         end
             drawScene(init, board_display)
             
         end
@@ -210,5 +215,14 @@ function lose_notice =  LoseStyle(init, board_display)
     drawScene(init, board_display)
     lose_notice = text(300, 300, "AI Win", 'FontSize', 35,'Color','white');
 end
+
+function [push_notice, lose_notice, win_notice] =  pushStyle(init, board_display)
+    drawScene(init, board_display)
+    push_notice = text(300, 300, "Push", 'FontSize', 35,'Color','white');
+    lose_notice.String = '';
+    win_notice.String = '';
+    
+end
+
 
 
